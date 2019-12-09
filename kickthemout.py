@@ -7,7 +7,7 @@ Copyright (C) 2017-18 Nikolaos Kamarinakis (nikolaskam@gmail.com) & David Schüt
 See License at nikolaskama.me (https://nikolaskama.me/kickthemoutproject)
 """
 
-import os, sys, logging, math, traceback, optparse, threading
+import os, sys, logging, math, traceback, optparse, threading, netifaces
 from time import sleep
 BLUE, RED, WHITE, YELLOW, MAGENTA, GREEN, END = '\33[94m', '\033[91m', '\33[97m', '\33[93m', '\033[1;35m', '\033[1;32m', '\033[0m'
 
@@ -191,10 +191,15 @@ def getGatewayIP():
         return getGateway.src
     except:
         # request gateway IP address (after failed detection by scapy)
-        stopAnimation = True
-        print("\n{}ERROR: Gateway IP could not be obtained. Please enter IP manually.{}\n".format(RED, END))
-        header = ('{}kickthemout{}> {}Enter Gateway IP {}(e.g. 192.168.1.1): '.format(BLUE, WHITE, RED, END))
-        return (input(header))
+        try:
+            gws=netifaces.gateways()
+            gateway = gws['default'][netifaces.AF_INET][0]
+            return gateway
+        except: 
+            stopAnimation = True
+            print("\n{}ERROR: Gateway IP could not be obtained. Please enter IP manually.{}\n".format(RED, END))
+            header = ('{}kickthemout{}> {}Enter Gateway IP {}(e.g. 192.168.1.1): '.format(BLUE, WHITE, RED, END))
+            return (input(header))
 
 
 
